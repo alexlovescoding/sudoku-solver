@@ -144,7 +144,11 @@ class Row extends React.Component<RowProps> {
         }
 
         const val = store.gridVal(store.cell(r, c))
-        return <input type="text" disabled={store.solved} onChange={onChange} value={val === undefined ? "" : val} />
+        return <input className={val && val.solved ? style({fontWeight: "bolder"}) : ""}
+            type="text"
+            disabled={store.solved}
+            onChange={onChange}
+            value={val === undefined ? "" : val.val} />
     }
 }
 

@@ -1,7 +1,12 @@
 import { observable, action, computed, ObservableMap } from "mobx";
 
+interface GridValue {
+    val: number,
+    solved: boolean
+}
+
 interface State {
-    grid: ObservableMap<number | undefined>;
+    grid: ObservableMap<GridValue>;
     potentialSolutions: { [key: string]: string };
     solved: boolean;
 }
@@ -95,7 +100,7 @@ export class Store {
         }
 
         const invalid = this.peers[cell].some(p => {
-            if (this.state.grid.get(p) === val) {
+            if (this.state.grid.has(p) && this.state.grid.get(p).val === val) {
                 return true
             }
             return false
@@ -107,7 +112,10 @@ export class Store {
             return
         }
 
-        this.state.grid.set(cell, val)
+        this.state.grid.set(cell, {
+            val,
+            solved: false,
+        })
 
         const calcSolutions = async () => {
             if (this.solutionPromise) {
@@ -126,7 +134,7 @@ export class Store {
         })
 
         const valid = this.state.grid.keys().every(key => {
-            if (!this.assign(this.state.potentialSolutions, key, this.state.grid.get(key))) {
+            if (!this.assign(this.state.potentialSolutions, key, this.state.grid.get(key).val)) {
                 return false
             }
 
@@ -242,7 +250,12 @@ export class Store {
         }
 
         this.squares.forEach(s => {
-            this.state.grid.set(s, parseInt(this.state.potentialSolutions[s]))
+            if (!this.state.grid.has(s)) {
+                this.state.grid.set(s, {
+                    val: parseInt(this.state.potentialSolutions[s]),
+                    solved: true
+                })
+            }
         })
 
         this.state.solved = true;

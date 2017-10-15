@@ -146,7 +146,7 @@ var Row = /** @class */ (function (_super) {
             store.updateGrid(store.cell(r, c), parseInt(ev.currentTarget.value, 10));
         };
         var val = store.gridVal(store.cell(r, c));
-        return React.createElement("input", { type: "text", disabled: store.solved, onChange: onChange, value: val === undefined ? "" : val });
+        return React.createElement("input", { className: val && val.solved ? typestyle_1.style({ fontWeight: "bolder" }) : "", type: "text", disabled: store.solved, onChange: onChange, value: val === undefined ? "" : val.val });
     };
     Row = __decorate([
         mobx_react_1.observer
@@ -237,7 +237,7 @@ var Store = /** @class */ (function () {
                 return;
             }
             var invalid = _this.peers[cell].some(function (p) {
-                if (_this.state.grid.get(p) === val) {
+                if (_this.state.grid.has(p) && _this.state.grid.get(p).val === val) {
                     return true;
                 }
                 return false;
@@ -247,7 +247,10 @@ var Store = /** @class */ (function () {
                 _this.parsePossibleSolutions();
                 return;
             }
-            _this.state.grid.set(cell, val);
+            _this.state.grid.set(cell, {
+                val: val,
+                solved: false,
+            });
             var calcSolutions = function () { return __awaiter(_this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
@@ -273,7 +276,7 @@ var Store = /** @class */ (function () {
                     _this.state.potentialSolutions[s] = _this.digits;
                 });
                 valid = this.state.grid.keys().every(function (key) {
-                    if (!_this.assign(_this.state.potentialSolutions, key, _this.state.grid.get(key))) {
+                    if (!_this.assign(_this.state.potentialSolutions, key, _this.state.grid.get(key).val)) {
                         return false;
                     }
                     return true;
@@ -378,7 +381,12 @@ var Store = /** @class */ (function () {
                             this.state.potentialSolutions = val;
                         }
                         this.squares.forEach(function (s) {
-                            _this.state.grid.set(s, parseInt(_this.state.potentialSolutions[s]));
+                            if (!_this.state.grid.has(s)) {
+                                _this.state.grid.set(s, {
+                                    val: parseInt(_this.state.potentialSolutions[s]),
+                                    solved: true
+                                });
+                            }
                         });
                         this.state.solved = true;
                         return [2 /*return*/];
