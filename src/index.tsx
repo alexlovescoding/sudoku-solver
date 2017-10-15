@@ -140,10 +140,10 @@ class Row extends React.Component<RowProps> {
         const { r, store } = this.props;
 
         const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-            store.updateGrid(r, c, parseInt(ev.currentTarget.value, 10));
+            store.updateGrid(store.cell(r, c), parseInt(ev.currentTarget.value, 10));
         }
 
-        const val = store.gridVal(r, c)
+        const val = store.gridVal(store.cell(r, c))
         return <input type="text" disabled={store.solved} onChange={onChange} value={val === undefined ? "" : val} />
     }
 }
