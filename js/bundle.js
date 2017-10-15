@@ -136,22 +136,65 @@ var Row = /** @class */ (function (_super) {
     Row.prototype.render = function () {
         var cells = [];
         for (var c = 1; c <= 9; c++) {
-            cells.push(React.createElement("td", { className: this.Styles.cell, key: c }, this.input(c)));
+            cells.push(React.createElement("td", { className: this.Styles.cell, key: c },
+                React.createElement(Input, { r: this.props.r, c: c, store: this.props.store })));
         }
         return React.createElement("tr", { className: this.Styles.row }, cells);
-    };
-    Row.prototype.input = function (c) {
-        var _a = this.props, r = _a.r, store = _a.store;
-        var onChange = function (ev) {
-            store.updateGrid(store.cell(r, c), parseInt(ev.currentTarget.value, 10));
-        };
-        var val = store.gridVal(store.cell(r, c));
-        return React.createElement("input", { className: val && val.solved ? typestyle_1.style({ fontWeight: "bolder" }) : "", type: "text", disabled: store.solved, onChange: onChange, value: val === undefined ? "" : val.val });
     };
     Row = __decorate([
         mobx_react_1.observer
     ], Row);
     return Row;
+}(React.Component));
+var Input = /** @class */ (function (_super) {
+    __extends(Input, _super);
+    function Input() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.select = function (elem) {
+            _this.elem = elem;
+        };
+        _this.onKeyPress = function (ev) {
+            var _a = _this.props, r = _a.r, c = _a.c, store = _a.store;
+            switch (ev.key) {
+                case "ArrowUp":
+                    if (r > 1) {
+                        store.setFocusCell(store.cell(r - 1, c));
+                    }
+                    break;
+                case "ArrowDown":
+                    if (r < 9) {
+                        store.setFocusCell(store.cell(r + 1, c));
+                    }
+                    break;
+                case "ArrowLeft":
+                    if (c > 1) {
+                        store.setFocusCell(store.cell(r, c - 1));
+                    }
+                    break;
+                case "ArrowRight":
+                    if (c < 9) {
+                        store.setFocusCell(store.cell(r, c + 1));
+                    }
+                    break;
+            }
+        };
+        return _this;
+    }
+    Input.prototype.render = function () {
+        var _a = this.props, r = _a.r, c = _a.c, store = _a.store;
+        var onChange = function (ev) {
+            store.updateGrid(store.cell(r, c), parseInt(ev.currentTarget.value, 10));
+        };
+        var val = store.gridVal(store.cell(r, c));
+        if (store.focusCell === store.cell(r, c) && this.elem) {
+            this.elem.focus();
+        }
+        return React.createElement("input", { ref: this.select, className: val && val.solved ? typestyle_1.style({ fontWeight: "bolder" }) : "", type: "text", disabled: store.solved, onChange: onChange, value: val === undefined ? "" : val.val, onKeyDown: this.onKeyPress });
+    };
+    Input = __decorate([
+        mobx_react_1.observer
+    ], Input);
+    return Input;
 }(React.Component));
 typestyle_1.cssRule("body", {
     fontFamily: "Open Sans, sans-serif"
@@ -221,8 +264,12 @@ var Store = /** @class */ (function () {
             _this.state = {
                 grid: new mobx_1.ObservableMap(),
                 solved: false,
-                potentialSolutions: {}
+                potentialSolutions: {},
+                focusCell: ""
             };
+        };
+        this.setFocusCell = function (val) {
+            _this.state.focusCell = val;
         };
         this.updateGrid = function (cell, val) {
             if (!_this.peers[cell]) {
@@ -434,6 +481,13 @@ var Store = /** @class */ (function () {
         });
         this.reset();
     }
+    Object.defineProperty(Store.prototype, "focusCell", {
+        get: function () {
+            return this.state.focusCell;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(Store.prototype, "solved", {
         get: function () {
             return this.state.solved;
@@ -458,7 +512,13 @@ var Store = /** @class */ (function () {
     ], Store.prototype, "reset", void 0);
     __decorate([
         mobx_1.computed
+    ], Store.prototype, "focusCell", null);
+    __decorate([
+        mobx_1.computed
     ], Store.prototype, "solved", null);
+    __decorate([
+        mobx_1.action
+    ], Store.prototype, "setFocusCell", void 0);
     __decorate([
         mobx_1.action
     ], Store.prototype, "updateGrid", void 0);

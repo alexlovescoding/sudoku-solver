@@ -126,7 +126,7 @@ class Row extends React.Component<RowProps> {
         for (let c = 1; c <= 9; c++) {
             cells.push(
                 <td className={this.Styles.cell} key={c}>
-                    {this.input(c)}
+                    <Input r={this.props.r} c={c} store={this.props.store} />
                 </td>
             )
         }
@@ -135,20 +135,68 @@ class Row extends React.Component<RowProps> {
             {cells}
         </tr>;
     }
+}
 
-    private input(c: number) {
-        const { r, store } = this.props;
+interface InputProps {
+    r: number;
+    c: number;
+    store: Store;
+}
+@observer
+class Input extends React.Component<InputProps> {
+    private elem: HTMLInputElement;
+
+    public render() {
+        const { r, c, store } = this.props;
 
         const onChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
             store.updateGrid(store.cell(r, c), parseInt(ev.currentTarget.value, 10));
         }
 
         const val = store.gridVal(store.cell(r, c))
-        return <input className={val && val.solved ? style({fontWeight: "bolder"}) : ""}
+
+        if (store.focusCell === store.cell(r, c) && this.elem) {
+            this.elem.focus();
+        }
+
+        return <input ref={this.select}
+            className={val && val.solved ? style({ fontWeight: "bolder" }) : ""}
             type="text"
             disabled={store.solved}
             onChange={onChange}
-            value={val === undefined ? "" : val.val} />
+            value={val === undefined ? "" : val.val}
+            onKeyDown={this.onKeyPress} />
+    }
+
+    private select = (elem: HTMLInputElement) => {
+        this.elem = elem;
+    }
+
+    private onKeyPress = (ev: React.KeyboardEvent<HTMLInputElement>) => {
+        const { r, c, store } = this.props;
+
+        switch (ev.key) {
+            case "ArrowUp":
+                if (r > 1) {
+                    store.setFocusCell(store.cell(r - 1, c));
+                }
+                break;
+            case "ArrowDown":
+                if (r < 9) {
+                    store.setFocusCell(store.cell(r + 1, c));
+                }
+                break;
+            case "ArrowLeft":
+                if (c > 1) {
+                    store.setFocusCell(store.cell(r, c - 1));
+                }
+                break;
+            case "ArrowRight":
+                if (c < 9) {
+                    store.setFocusCell(store.cell(r, c + 1));
+                }
+                break;
+        }
     }
 }
 

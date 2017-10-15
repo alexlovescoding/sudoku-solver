@@ -9,6 +9,7 @@ interface State {
     grid: ObservableMap<GridValue>;
     potentialSolutions: { [key: string]: string };
     solved: boolean;
+    focusCell: string;
 }
 export class Store {
     @observable private state: State;
@@ -76,14 +77,26 @@ export class Store {
         this.state = {
             grid: new ObservableMap(),
             solved: false,
-            potentialSolutions: {}
+            potentialSolutions: {},
+            focusCell: ""
         }
+    }
+
+    @computed
+    public get focusCell() {
+        return this.state.focusCell;
     }
 
     @computed
     public get solved() {
         return this.state.solved;
     }
+
+    @action
+    public setFocusCell = (val: string) => {
+        this.state.focusCell = val;
+    }
+
     @action
     public updateGrid = (cell: string, val: number) => {
         if (!this.peers[cell]) {
