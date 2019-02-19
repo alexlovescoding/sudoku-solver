@@ -27,7 +27,7 @@
     "mobx": "^3.3.1",
     "mobx-react": "^4.3.3",
     "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react-dom": "^16.0.1",
     "typestyle": "^1.4.2"
   },
   "devDependencies": {
@@ -36,13 +36,13 @@
     "@types/react": "^16.0.10",
     "@types/react-dom": "^16.0.1",
     "@types/rimraf": "^2.0.2",
-    "fuse-box": "^2.3.3",
+    "fuse-box": "^3.7.1",
     "rimraf": "^2.6.2",
     "ts-node": "^3.3.0",
     "tslib": "^1.8.0",
     "tslint": "^5.7.0",
     "tslint-config-prettier": "^1.5.0",
     "tslint-react": "^3.2.0",
-    "typescript": "^2.5.3"
+    "typescript": "^3.0"
   }
 }
