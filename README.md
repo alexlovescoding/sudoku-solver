@@ -1,3 +1,3 @@
 # Typescript + React Sudoku Solver
 ### Using Constraint Propagation and Search
-[Demo](https://theoriginalalex.github.io/sudoku-solver/)
+[Demo](https://alex-kattathra-johnson.github.io/sudoku-solver/)
